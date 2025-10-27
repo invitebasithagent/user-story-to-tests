@@ -1,4 +1,5 @@
 export interface GenerateRequest {
+  JIRA: string
   storyTitle: string
   acceptanceCriteria: string
   description?: string
@@ -20,3 +21,4 @@ export interface GenerateResponse {
   promptTokens: number
   completionTokens: number
 }
+

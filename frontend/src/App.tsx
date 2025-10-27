@@ -4,6 +4,7 @@ import { GenerateRequest, GenerateResponse, TestCase } from './types'
 
 function App() {
   const [formData, setFormData] = useState<GenerateRequest>({
+    JIRA: '',
     storyTitle: '',
     acceptanceCriteria: '',
     description: '',
@@ -31,7 +32,7 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.storyTitle.trim() || !formData.acceptanceCriteria.trim()) {
+    if (!formData.JIRA.trim() || !formData.storyTitle.trim() || !formData.acceptanceCriteria.trim()) {
       setError('Story Title and Acceptance Criteria are required')
       return
     }
@@ -342,10 +343,27 @@ function App() {
         </div>
         
         <form onSubmit={handleSubmit} className="form-container">
+
+          
+          <div className="form-group">        
+            <label htmlFor="JIRA Story" className="form-label">
+              JIRA *
+            </label>
+            <input
+              type="text"
+              id="JIRA"
+              className="form-input"
+              value={formData.JIRA}
+              onChange={(e) => handleInputChange('JIRA', e.target.value)}
+              placeholder="Enter the JIRA..."
+              required
+            />
+            <button type="button" className="info-btn" title="Enter the JIRA identifier associated with the user story. This helps in tracking and referencing the story within your project management system.">Fetch</button>
+          </div>
           <div className="form-group">
             <label htmlFor="storyTitle" className="form-label">
               Story Title *
-            </label>
+            </label>     
             <input
               type="text"
               id="storyTitle"

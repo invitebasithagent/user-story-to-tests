@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export const GenerateRequestSchema = z.object({
+  JIRA: z.string().min(1, 'JIRA is required'),
   storyTitle: z.string().min(1, 'Story title is required'),
   acceptanceCriteria: z.string().min(1, 'Acceptance criteria is required'),
   description: z.string().optional(),

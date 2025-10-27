@@ -31,11 +31,14 @@ Guidelines:
 Return ONLY the JSON object, no additional text or formatting.`
 
 export function buildPrompt(request: GenerateRequest): string {
-  const { storyTitle, acceptanceCriteria, description, additionalInfo } = request
+  const { JIRA, storyTitle, acceptanceCriteria, description, additionalInfo } = request
   
   let userPrompt = `Generate comprehensive test cases for the following user story:
 
-Story Title: ${storyTitle}
+Story Title: 
+${JIRA}
+
+${storyTitle}
 
 Acceptance Criteria:
 ${acceptanceCriteria}
