@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { generateTests } from './api'
+import { generateTests, fetchJiraIssue } from './api'
 import { GenerateRequest, GenerateResponse, TestCase } from './types'
 
 function App() {
@@ -358,7 +358,30 @@ function App() {
               placeholder="Enter the JIRA..."
               required
             />
-            <button type="button" className="info-btn" title="Enter the JIRA identifier associated with the user story. This helps in tracking and referencing the story within your project management system.">Fetch</button>
+            <button
+              type="button"
+              className="info-btn"
+              onClick={async () => {
+                if (!formData.JIRA.trim()) {
+                  setError('Please enter a JIRA issue key before fetching')
+                  return
+                }
+                setIsLoading(true)
+                setError(null)
+                try {
+                  const { summary, description } = await fetchJiraIssue(formData.JIRA.trim())
+                  // Map Jira Summary -> storyTitle, Jira Description -> acceptanceCriteria
+                  setFormData(prev => ({ ...prev, storyTitle: summary || prev.storyTitle, acceptanceCriteria: description || prev.acceptanceCriteria }))
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : 'Failed to fetch JIRA issue')
+                } finally {
+                  setIsLoading(false)
+                }
+              }}
+              title="Enter the JIRA identifier associated with the user story. This helps in tracking and referencing the story within your project management system."
+            >
+              Fetch
+            </button>
           </div>
           <div className="form-group">
             <label htmlFor="storyTitle" className="form-label">

@@ -24,3 +24,29 @@ export async function generateTests(request: GenerateRequest): Promise<GenerateR
     throw error instanceof Error ? error : new Error('Unknown error occurred')
   }
 }
+
+export async function fetchJiraIssue(issueKey: string): Promise<{ summary: string; description: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/jira/fetch`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ issueKey }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return {
+      summary: data.summary || '',
+      description: data.description || ''
+    }
+  } catch (error) {
+    console.error('Error fetching JIRA issue:', error)
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}

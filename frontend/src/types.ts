@@ -22,3 +22,9 @@ export interface GenerateResponse {
   completionTokens: number
 }
 
+// Jira issue shape returned by our backend
+export interface JiraIssue {
+  summary: string
+  description: string
+}
+

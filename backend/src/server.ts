@@ -3,6 +3,18 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { generateRouter } from './routes/generate'
+// Jira router: try to require from ./routes/jira, otherwise use a stub router
+let jiraRouter: express.Router;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  jiraRouter = require('./routes/jira').jiraRouter;
+} catch (err) {
+  console.warn("Warning: ./routes/jira not found; using stub router");
+  jiraRouter = express.Router();
+  jiraRouter.get('/', (req, res) => {
+    res.status(404).json({ error: 'Jira routes are not available' });
+  });
+}
 
 // Load environment variables from root directory
 const envPath = path.join(__dirname, '../../.env')
@@ -35,6 +47,7 @@ app.get('/api/health', (req, res) => {
 
 // API routes
 app.use('/api/generate-tests', generateRouter)
+app.use('/api/jira', jiraRouter)
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
