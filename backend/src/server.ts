@@ -34,11 +34,21 @@ const PORT = process.env.PORT || 8080
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  credentials: true
+  origin: process.env.CORS_ORIGIN || ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
+
+// Add response headers middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || 'http://localhost:5173')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  next()
+})
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

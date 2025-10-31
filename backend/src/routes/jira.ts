@@ -1,5 +1,11 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import { z } from 'zod'
+
+// Validation schema for Jira request
+const JiraFetchRequestSchema = z.object({
+  issueKey: z.string().min(1, 'Issue key is required')
+})
 
 export const jiraRouter = express.Router()
 
@@ -15,12 +21,21 @@ function extractPlainTextFromADF(node: any): string {
 }
 
 jiraRouter.post('/fetch', async (req: express.Request, res: express.Response) => {
+  console.log('Received Jira fetch request:', req.body)
+  
   try {
-    const { issueKey } = req.body || {}
-    if (!issueKey || typeof issueKey !== 'string') {
-      res.status(400).json({ error: 'issueKey is required in request body' })
+    // Validate request body
+    const validationResult = JiraFetchRequestSchema.safeParse(req.body)
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error)
+      res.status(400).json({ 
+        error: `Invalid request: ${validationResult.error.message}`,
+        details: validationResult.error.errors
+      })
       return
     }
+    
+    const { issueKey } = validationResult.data
 
     const JIRA_BASE_URL = process.env.JIRA_BASE_URL
     const JIRA_EMAIL = process.env.JIRA_EMAIL
